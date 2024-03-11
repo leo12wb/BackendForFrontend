@@ -1,0 +1,13 @@
+version: '3'
+
+services: 
+   nest-database:
+    # build: ./database
+    image: mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/.mysql:/var/lib/mysql
+    env_file:
+      - .env
+    container_name: nest-database

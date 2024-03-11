@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model MicroServices {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @db.VarChar(150)
+  name        String    @db.VarChar(150)
+  version     String    @db.VarChar(10)
+  method      String    @db.VarChar(10)
+  url         String    @db.VarChar(200)
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt
+
+  productServices ProductServices[]
+}
+
+model ProductServices {
+  id              Int       @id @default(autoincrement())
+  productId       String    @db.VarChar(150)
+  microServiceId  String?       
+  isActive        Boolean?  @default(true)
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @default(now()) @updatedAt
+
+  microServices  MicroServices?  @relation(fields: [microServiceId], references: [uuid])
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @db.VarChar(150)
+  name        String    @db.VarChar(150)
+  version     String    @db.VarChar(10)
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt
+}
+
