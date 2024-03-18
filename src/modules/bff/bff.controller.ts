@@ -3,47 +3,41 @@ import {
   Post,
   Body,
   Param,
+  Header,
   //Query,
 } from '@nestjs/common';
 
 import { DatabaseService } from 'src/core/database.service';
-import { BffOne, BffTwo } from 'src/dtos/bff.dto';
+import { Bff } from 'src/dtos/bff.dto';
 //import { Product } from 'src/dtos/product.dto';
-import { ProductServices } from 'src/dtos/productServices.dto';
+//import { ProductServices } from 'src/dtos/productServices.dto';
 import { MicroServices } from 'src/dtos/microServices.dto';
 
-@Controller('apiBff')
+@Controller('bff')
 export class BffController {
   constructor(
     //private databaseP: DatabaseService<Product>,
-    private databasePs: DatabaseService<ProductServices>,
+    // private databasePs: DatabaseService<ProductServices>,
     private databaseMs: DatabaseService<MicroServices>,
   ) {}
 
-  @Post()
-  async getAll(@Body() body: BffOne) {
-    return this.databasePs.fetchAll({
-      where: {
-        productId: {
-          contains: body.produtoId,
-        },
-      },
-      include: {
-        microServices: true,
-      },
-    });
-  }
-
-  @Post(':microServicesId')
+  @Post(':servico/:version')
+  @Header('Cache-Control', 'none')
   async requestMicroService(
-    @Param('microServicesId') microServicesId: number,
-    @Body() body: BffTwo,
+    @Param('servico','version') servico: string, version: string,
+    @Body() body: Bff,
   ) {
     const micro = this.databaseMs.fetchAll({
       where: {
         uuid: {
-          contains: microServicesId,
+          contains: servico,
         },
+        // name:{
+        //   contains: name,
+        // },
+        version:{
+          contains: version,
+        }
       },
     });
 
