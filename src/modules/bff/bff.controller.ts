@@ -24,7 +24,8 @@ export class BffController {
   @Post(':servico/:version')
   @Header('Cache-Control', 'none')
   async requestMicroService(
-    @Param('servico','version') servico: string, version: string,
+    @Param('servico') servico: string,
+    @Param('version') version: string,
     @Body() body: Bff,
   ) {
     const micro = this.databaseMs.fetchAll({
@@ -35,9 +36,9 @@ export class BffController {
         // name:{
         //   contains: name,
         // },
-        version:{
+        version: {
           contains: version,
-        }
+        },
       },
     });
 
