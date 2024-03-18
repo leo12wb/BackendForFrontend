@@ -11,7 +11,7 @@ import {
 import { DatabaseService } from 'src/core/database.service';
 import { ProductServices } from 'src/dtos/productServices.dto';
 
-@Controller('microServices')
+@Controller('services')
 export class ProductServicesController {
   constructor(private database: DatabaseService<ProductServices>) {}
 

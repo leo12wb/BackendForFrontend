@@ -59,8 +59,8 @@ export class DatabaseService<T extends SQL> implements CRUDRepository<T> {
     return this.prisma[this.tableName].create({ data });
   }
 
-  fetchAll(searchOptions?: SearchOptions): Promise<T[]> {
-    return this.prisma[this.tableName].findMany({
+  async fetchAll(searchOptions?: SearchOptions): Promise<T[]> {
+    return await this.prisma[this.tableName].findMany({
       ...searchOptions,
       where: { ...searchOptions.where, isActive: true },
     });

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Adicione estilos personalizados aqui, se necessário */
+  </style>
+</head>
+<body>
+
+  <div class="container mt-5">
+    <h2 class="mb-4">Dashboard</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Total de Produtos</h5>
+            <p class="card-text">1</p> <!-- Substitua por uma variável dinâmica com o número real de produtos -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-12" style="margin-bottom: 15px;">
+        <div class="row">
+          <div class="col-md-9">
+           <h4>Produtos</h4>
+          </div>
+          <div class="col-md-3">
+           <button type="button" class="btn btn-success" data-toggle="modal" data-target="#criarProdutoModal" style="float:right;">Criar Novo Produto</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <ul id="listaProdutos" class="list-group">
+          <!-- Aqui será exibida a lista de produtos -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para criar novo produto -->
+  <div class="modal fade" id="criarProdutoModal" tabindex="-1" role="dialog" aria-labelledby="criarProdutoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="criarProdutoModalLabel">Criar Novo Produto</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulário para criar um novo produto -->
+          <form>
+            <div class="form-group">
+              <label for="nomeProduto">Nome do Produto</label>
+              <input type="text" class="form-control" id="nomeProduto" placeholder="Nome do Produto">
+            </div>
+            <!-- Adicione mais campos conforme necessário -->
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Adicione seu código JavaScript personalizado aqui -->
+</body>
+
+
+<script>
+    // Função para buscar a lista de produtos
+    function fetchProdutos() {
+      fetch('/product') // Substitua '/api/produtos' pela sua URL de API real
+        .then(response => response.json())
+        .then(data => {
+          // Limpa a lista existente
+          const listaProdutos = document.getElementById('listaProdutos');
+          listaProdutos.innerHTML = '';
+  
+          // Adiciona cada produto à lista
+          data.forEach(produto => {
+
+            const li = document.createElement('li');
+            li.classList.add('list-group-item');
+            li.innerHTML = `
+              <b>${produto.name}</b>
+              
+              <div class="btn-group float-right" role="group">
+                <button type="button" class="btn btn-primary btn-sm" onclick="editarProduto(${produto.id})" style='margin-right:5px;'>Editar</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="deletarProduto(${produto.id})">Deletar</button>
+              </div>
+
+              <p style="margin-top:15px;">Micro Serviços</p>
+              <div id="list-${produto.uuid}">
+              </div>
+              `;
+            listaProdutos.appendChild(li);
+
+            fetch('/services?'+ new URLSearchParams({
+                productId: produto.uuid,
+            }))
+            .then(response => response.json())
+            .then(data => {
+                // Adiciona cada produto à lista
+                data.forEach(p => {
+                    fetch('/microServices/uuid/'+ p.microServiceId)
+                    .then(response => response.json())
+                    .then(d => {
+                        const listaP = document.getElementById('list-'+produto.uuid);
+                        const li = document.createElement('li')
+                        li.classList.add('list-group-item');
+                        li.innerHTML = `
+                           <span style="background-color: #ffd8a3;border-radius: 5px;padding: 5px;font-size: 12px;font-weight: 700;">
+                             Version:  ${d.version} 
+                           </span> -
+                           ${d.name} -
+                           <b>${d.method}</b> - 
+                           <a href="${d.url}" style="color: #2f90e4;"> ${d.url} </a>
+
+                            <div class="btn-group float-right" role="group">
+                                <button type="button" class="btn btn-info btn-sm" style='margin-right:5px;'>Teste Request</button>
+                                <button type="button" class="btn btn-primary btn-sm" style='margin-right:5px;'>Editar</button>
+                                <button type="button" class="btn btn-danger btn-sm">Deletar</button>
+                            </div>
+                        `;
+                        listaP.appendChild(li);
+                    });
+                });
+            })
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao buscar a lista de produtos:', error);
+        });
+    }
+
+    function fetchServicos(productId) {
+        fetch('/services?'+ new URLSearchParams({
+            productId: productId,
+        }) ) 
+        .then(response => response.json())
+        .then(data => {
+  
+          // Adiciona cada produto à lista
+          data.forEach(produto => {
+            const li = document.createElement('li');
+            li.classList.add('list-'+productId);
+            li.innerHTML = `
+              ${produto}
+            
+              `;
+            listaProdutos.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao buscar a lista de produtos:', error);
+        });
+    }
+  
+    // Função para visualizar um produto
+    function visualizarProduto(uuid) {
+      // Implemente a lógica para visualizar um produto, se necessário
+      console.log('Visualizar produto:', uuid);
+      //fetchServicos(uuid) 
+    }
+  
+    // Função para editar um produto
+    function editarProduto(id) {
+      // Implemente a lógica para editar um produto, se necessário
+      console.log('Editar produto:', id);
+    }
+  
+    // Função para deletar um produto
+    function deletarProduto(id) {
+      // Implemente a lógica para deletar um produto, se necessário
+      console.log('Deletar produto:', id);
+    }
+  
+    // Chamando fetchProdutos() quando a página carrega
+    document.addEventListener('DOMContentLoaded', fetchProdutos);
+  </script>
+</html>

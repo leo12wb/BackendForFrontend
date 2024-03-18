@@ -16,11 +16,17 @@ export class MicroServicesController {
   constructor(private database: DatabaseService<MicroServices>) {}
 
   @Get()
-  async getAll(@Query('name') name: string) {
+  async getAll(
+    @Query('name') name: string,
+    @Query('microServiceId') microServiceId: string,
+  ) {
     return this.database.fetchAll({
       where: {
         name: {
           contains: name,
+        },
+        uuid: {
+          contains: microServiceId,
         },
       },
     });
@@ -29,6 +35,11 @@ export class MicroServicesController {
   @Get(':id')
   async get(@Param('id') id: number) {
     return this.database.fetch(id);
+  }
+
+  @Get('uuid/:uuid')
+  async getUuid(@Param('uuid') uuid: string) {
+    return this.database.fetchUuid(uuid);
   }
 
   @Post()

@@ -1,9 +1,11 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   Param,
   Header,
+  Res,
   //Query,
 } from '@nestjs/common';
 
@@ -12,6 +14,10 @@ import { Bff } from 'src/dtos/bff.dto';
 //import { Product } from 'src/dtos/product.dto';
 //import { ProductServices } from 'src/dtos/productServices.dto';
 import { MicroServices } from 'src/dtos/microServices.dto';
+
+import { Response } from 'express';
+
+import * as path from 'path';
 
 @Controller('bff')
 export class BffController {
@@ -57,5 +63,13 @@ export class BffController {
 
       return allResponses;
     });
+  }
+}
+
+@Controller('page')
+export class pageController {
+  @Get()
+  root(@Res() res: Response): void {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
   }
 }
