@@ -9,16 +9,16 @@
     /* Adicione estilos personalizados aqui, se necessário */
   </style>
 </head>
-<body>
+<body style="background-color: #f4f4f4;">
 
   <div class="container mt-5">
-    <h2 class="mb-4">Dashboard</h2>
+    <h2 class="mb-4" style="font-size: 26px;">Dashboard Micro Serviços dos APPs</h2>
     <div class="row">
       <div class="col-md-4">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Total de Produtos</h5>
-            <p class="card-text">1</p> <!-- Substitua por uma variável dinâmica com o número real de produtos -->
+            <h5 class="card-title">Total de Aplicativos</h5>
+            <p class="card-text">2</p> <!-- Substitua por uma variável dinâmica com o número real de produtos -->
           </div>
         </div>
       </div>
@@ -28,10 +28,10 @@
       <div class="col-md-12" style="margin-bottom: 15px;">
         <div class="row">
           <div class="col-md-9">
-           <h4>Produtos</h4>
+           <h4>Aplicativos</h4>
           </div>
           <div class="col-md-3">
-           <button type="button" class="btn btn-success" data-toggle="modal" data-target="#criarProdutoModal" style="float:right;">Criar Novo Produto</button>
+           <button type="button" class="btn btn-success" data-toggle="modal" data-target="#criarProdutoModal" style="float:right;">Criar Novo Aplicativo</button>
           </div>
         </div>
       </div>
@@ -90,8 +90,14 @@
 
             const li = document.createElement('li');
             li.classList.add('list-group-item');
+            li.classList.add('list-group-item1');
             li.innerHTML = `
-              <b>${produto.name}</b>
+              <span style="background-color: #ff6a6a;border-radius: 5px;padding: 5px;font-size: 12px;font-weight: 700;color:#fff;" title="Chave Indentificadora">
+                 ${produto.uuid} 
+              </span><br><br>
+              <b> ${produto.name}</b>
+
+              
               
               <div class="btn-group float-right" role="group">
                 <button type="button" class="btn btn-primary btn-sm" onclick="editarProduto(${produto.id})" style='margin-right:5px;'>Editar</button>
@@ -118,11 +124,15 @@
                         const li = document.createElement('li')
                         li.classList.add('list-group-item');
                         li.innerHTML = `
-                           <span style="background-color: #ffd8a3;border-radius: 5px;padding: 5px;font-size: 12px;font-weight: 700;">
-                             Version:  ${d.version} 
-                           </span> -
-                           ${d.name} -
-                           <b>${d.method}</b> - 
+                           <span style="background-color: #ff6a6a;border-radius: 5px;padding: 5px;font-size: 12px;font-weight: 700;color:#fff; margin-right:5px;"
+                           title="Chave Indentificadora">
+                             ${d.uuid} 
+                           </span>
+                           <span style="background-color: #ffd8a3;border-radius: 5px;padding: 5px;font-size: 12px;font-weight: 700;margin-right:5px;" title="Versão">
+                             ${d.version} 
+                           </span> 
+                           ${d.name} 
+                           <b style="background-color: #969696;border-radius: 5px;padding: 5px;font-size: 12px;font-weight: 700;margin-left:5px;" title="Method">${d.method}</b> - 
                            <a href="${d.url}" style="color: #2f90e4;"> ${d.url} </a>
 
                             <div class="btn-group float-right" role="group">
@@ -135,29 +145,6 @@
                     });
                 });
             })
-          });
-        })
-        .catch(error => {
-          console.error('Erro ao buscar a lista de produtos:', error);
-        });
-    }
-
-    function fetchServicos(productId) {
-        fetch('/services?'+ new URLSearchParams({
-            productId: productId,
-        }) ) 
-        .then(response => response.json())
-        .then(data => {
-  
-          // Adiciona cada produto à lista
-          data.forEach(produto => {
-            const li = document.createElement('li');
-            li.classList.add('list-'+productId);
-            li.innerHTML = `
-              ${produto}
-            
-              `;
-            listaProdutos.appendChild(li);
           });
         })
         .catch(error => {
@@ -187,4 +174,9 @@
     // Chamando fetchProdutos() quando a página carrega
     document.addEventListener('DOMContentLoaded', fetchProdutos);
   </script>
+  <style>
+    .list-group-item1{
+        margin-bottom: 15px;
+    }
+  </style>
 </html>
